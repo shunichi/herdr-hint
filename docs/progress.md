@@ -23,6 +23,9 @@
 
 実装中に確定した設計判断を、Why 付きで新しい順に追記する。
 
+- **2026-07-18 相手役の spawn は herdr を使う**: レビュー役(codex)などを spawn するときは agmsg の
+  tmux spawn ではなく herdr のネイティブ pane（`herdr pane split` + `pane run`）を使う。agmsg は
+  チーム登録(join)と受信のみ。Why: HERDR_ENV=1 環境では herdr の pane 管理と統合させるため。
 - **2026-07-18 役割構成**: 実装役 = claude、レビュー役 = codex（agmsg team `herdr-hint`）。
   Why: agent-project-init skill の既定構成。状況に応じて入れ替え／両役 Claude も可。
 - **2026-07-18 実装スタックを Go + Bubble Tea に決定**: 本家 herdr-hint は Rust + crossterm だが、
