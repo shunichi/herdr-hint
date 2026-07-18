@@ -1,1 +1,6 @@
-/target
+# build output (binary name matches herdr-plugin.toml build)
+/herdr-hint
+
+# Go
+*.test
+*.out
