@@ -1,0 +1,17 @@
+id = "shunichi.hint"
+name = "Hint"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "Vimium-style hint labels to jump to any agent"
+platforms = ["linux", "macos"]
+
+[[build]]
+command = ["go", "build", "-o", "herdr-hint", "."]
+
+[[panes]]
+id = "jump"
+title = "Hint Jump"
+placement = "popup"
+width = "60%"
+height = "50%"
+command = ["sh", "-c", "${HERDR_PLUGIN_ROOT}/herdr-hint"]
