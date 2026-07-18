@@ -33,8 +33,13 @@ func main() {
 func run() error {
 	client := herdr.New(herdrBin())
 
-	// Workspaces are only for grouping/labels; tolerate their absence.
-	workspaces, _ := client.ListWorkspaces()
+	// A successful empty list is fine (agents then render under "?"), but a CLI
+	// failure / malformed JSON must surface — silently degrading to orphan
+	// grouping would hide that workspace grouping is broken.
+	workspaces, err := client.ListWorkspaces()
+	if err != nil {
+		return err
+	}
 
 	agents, err := client.ListAgents()
 	if err != nil {

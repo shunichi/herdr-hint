@@ -64,20 +64,33 @@ func TestTwoCharSelect(t *testing.T) {
 	}
 }
 
-func TestTwoCharMismatchClearsBuffer(t *testing.T) {
+func TestFirstCharNotAPrefixIgnored(t *testing.T) {
+	// 27 items -> labels aa..az, ba. Valid first chars: a, b.
 	m := buildModel(t, 27)
-	m = upd(m, runeKey('z')) // pending "z"
-	m = upd(m, runeKey('z')) // "zz" not present -> clear buffer, no select
-	if m.Selected() != "" {
-		t.Fatalf("mismatch should not select, got %q", m.Selected())
-	}
+	m = upd(m, runeKey('z')) // 'z' starts no label -> ignored, pending stays empty
 	if m.pending != "" {
-		t.Fatalf("buffer should be cleared, pending=%q", m.pending)
+		t.Fatalf("invalid first char should be ignored, pending=%q", m.pending)
 	}
-	// next key starts fresh as a new first char
+	m = upd(m, runeKey('a')) // valid prefix
+	if m.pending != "a" {
+		t.Fatalf("valid first char: pending=%q", m.pending)
+	}
+}
+
+func TestValidPrefixThenSecondCharMismatch(t *testing.T) {
+	m := buildModel(t, 27) // labels aa..az, ba
+	m = upd(m, runeKey('b')) // 'b' is a valid prefix (ba exists)
+	if m.pending != "b" {
+		t.Fatalf("pending after b = %q", m.pending)
+	}
+	m = upd(m, runeKey('c')) // "bc" not a label -> clear, no select
+	if m.Selected() != "" || m.pending != "" {
+		t.Fatalf("second-char mismatch: sel=%q pending=%q", m.Selected(), m.pending)
+	}
+	// next key is a fresh first char
 	m = upd(m, runeKey('a'))
 	if m.pending != "a" {
-		t.Fatalf("fresh first char: pending=%q", m.pending)
+		t.Fatalf("fresh first char after mismatch: pending=%q", m.pending)
 	}
 }
 
@@ -147,5 +160,24 @@ func TestViewShowsVisibleWindow(t *testing.T) {
 	want := "l1\nl2\n"
 	if got != want {
 		t.Fatalf("View() = %q, want %q", got, want)
+	}
+}
+
+func TestViewTruncatesToWidth(t *testing.T) {
+	m := Model{lines: []string{"abcdefghij"}, width: 4} // height 0 -> show all
+	got := m.View()
+	if got != "abcd\n" {
+		t.Fatalf("View() = %q, want %q", got, "abcd\n")
+	}
+}
+
+func TestSmallHeightNoPanicScrollable(t *testing.T) {
+	m := Model{lines: make([]string, 30), height: 1} // visible=1 (known small height)
+	if m.visible() != 1 {
+		t.Fatalf("height=1 visible = %d, want 1", m.visible())
+	}
+	m = upd(m, key(tea.KeyCtrlD)) // must not panic; scrolls by 1 (half of 1)
+	if m.offset < 1 {
+		t.Fatalf("small height should still scroll, offset=%d", m.offset)
 	}
 }
