@@ -23,6 +23,11 @@
 
 実装中に確定した設計判断を、Why 付きで新しい順に追記する。
 
+- **2026-07-18 仕様: 選択対象はエージェントのみ＋種別表示**: 本家（タブ＋エージェント）と異なり、
+  ジャンプ対象をエージェントのみにする。各エージェント行に種別（claude/codex 等）を追加表示し、
+  それ以外（repository/branch/status/terminal title）とワークスペース別グルーピングは本家踏襲。
+  terminal title は `terminal_title_stripped` を使う（codex は空になり得る点を許容）。
+  Why: ユーザー要望（タブへのジャンプは不要、エージェントの種別が分かると識別しやすい）。
 - **2026-07-18 相手役の spawn は herdr を使う**: レビュー役(codex)などを spawn するときは agmsg の
   tmux spawn ではなく herdr のネイティブ pane（`herdr pane split` + `pane run`）を使う。agmsg は
   チーム登録(join)と受信のみ。Why: HERDR_ENV=1 環境では herdr の pane 管理と統合させるため。
