@@ -14,9 +14,12 @@ vet:
 
 check: vet test
 
-## install: このワーキングコピーを herdr に登録する（herdr plugin link が [[build]] を実行）。
+## install: このワーキングコピーを herdr に登録する。
+## `herdr plugin link` はビルドしない（build するのは GitHub からの `plugin install`）ので、
+## 先に build してバイナリを plugin_root に用意してから link する。無いと pane コマンド
+## `${HERDR_PLUGIN_ROOT}/herdr-hint` が起動できず popup が一瞬で閉じる。
 ## 既存の同 id 登録があれば best-effort で外してから link し直す（冪等）。
-install:
+install: build
 	-herdr plugin unlink $(PLUGIN_ID) 2>/dev/null
 	-herdr plugin uninstall $(PLUGIN_ID) 2>/dev/null
 	herdr plugin link "$$(pwd)"
