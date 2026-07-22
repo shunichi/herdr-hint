@@ -148,7 +148,7 @@ go.mod / go.sum
 | 0006 | インクリメンタル絞り込み式ジャンプを別コマンドとして追加（`herdr-hint filter`。fuzzy・グループ維持・↑↓/C-n/C-p・Enter） | 0002-0004 |
 | 0007 | herdr 0.7.5 対応（`agent focus` の target を terminal_id → pane_id に） | 0002 |
 
-0001-0006 は実装・レビュー・マージ済み。0007 はレビュー中（進捗は progress.md）。
+0001-0007 は実装・codex レビュー・マージ済み（進捗は progress.md）。
 
 ## 5. 未決事項（実装時に決める）
 

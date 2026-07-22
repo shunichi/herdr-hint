@@ -21,7 +21,7 @@
 | —  | 実装前レビュー（codex） | 完了 | 指摘反映 → 承認 |
 | 0001-0005 | 実装（Go + Bubble Tea・hint） | **完了** | 全 PR (#1-#5) codex 承認 → マージ。build/test/vet green |
 | 0006 | filter コマンド追加（別 entrypoint） | **完了** | PR #6 マージ（ユーザー指示。codex 未返信） |
-| 0007 | herdr 0.7.5 対応（focus を pane_id に） | 実装済み・レビュー中 | PR #7。実機 0.7.5 で focus 成功確認 |
+| 0007 | herdr 0.7.5 対応（focus を pane_id に） | **完了** | PR #7 codex 承認 → マージ。実機 0.7.5 で focus 成功 |
 
 ## 決定ログ
 
