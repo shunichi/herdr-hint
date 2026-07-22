@@ -58,13 +58,21 @@ description = "filter jump"
 
 ## 開発
 
-```sh
-go build -o herdr-hint .   # ビルド（herdr-plugin.toml の build と同じ）
-go test ./...              # テスト
-go vet ./...
+`make` ターゲットで一通り操作できる:
 
-herdr plugin link /path/to/herdr-hint   # ローカル開発リンク
+```sh
+make build      # go build -o herdr-hint .
+make test       # go test ./...
+make vet        # go vet ./...
+make check      # vet + test
+make install    # このワーキングコピーを herdr に登録（herdr plugin link。冪等）
+make uninstall  # herdr から登録を外す
+make clean      # バイナリ削除
 ```
+
+`make install` はローカル開発リンク（`herdr plugin link "$(pwd)"`）で、実行後にキーバインド設定例を表示する
+（キーバインドは各自の `~/.config/herdr/config.toml` に追記し、`herdr server reload-config` で反映）。
+公開版を入れる場合は上記「インストール」の `herdr plugin install shunichi/herdr-hint`。
 
 - herdr とは専用 SDK ではなく **CLI(JSON) 経由**で通信する（`herdr workspace list` /
   `herdr agent list` で取得、`herdr agent focus <id>` でフォーカス）。
