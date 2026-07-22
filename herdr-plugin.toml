@@ -15,3 +15,11 @@ placement = "popup"
 width = "60%"
 height = "50%"
 command = ["sh", "-c", "${HERDR_PLUGIN_ROOT}/herdr-hint"]
+
+[[panes]]
+id = "filter"
+title = "Filter Jump"
+placement = "popup"
+width = "60%"
+height = "50%"
+command = ["sh", "-c", "${HERDR_PLUGIN_ROOT}/herdr-hint filter"]
