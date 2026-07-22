@@ -6,7 +6,7 @@
 > - **決定ログ**: 実装中に確定した設計判断（Why 付き。未決は plan.md §5 に残す）。
 > - **次アクション**: 直近やること。
 
-最終更新: 2026-07-18
+最終更新: 2026-07-22
 
 ---
 
@@ -19,11 +19,24 @@
 | —  | プロジェクト初期セットアップ（docs/・CLAUDE.md・AGENTS.md・agmsg） | 完了 | agent-project-init skill で実施 |
 | —  | 調査（本家ソース＋実機 JSON）・仕様確定・タスク登録 | 完了 | §3.1/§3.2・0001-0005 |
 | —  | 実装前レビュー（codex） | 完了 | 指摘反映 → 承認 |
-| 0001-0005 | 実装（Go + Bubble Tea） | **完了** | 全 PR (#1-#5) codex 承認 → マージ。全パッケージ build/test/vet green |
+| 0001-0005 | 実装（Go + Bubble Tea・hint） | **完了** | 全 PR (#1-#5) codex 承認 → マージ。build/test/vet green |
+| 0006 | filter コマンド追加（別 entrypoint） | **完了** | PR #6 マージ（ユーザー指示。codex 未返信） |
+| 0007 | herdr 0.7.5 対応（focus を pane_id に） | 実装済み・レビュー中 | PR #7。実機 0.7.5 で focus 成功確認 |
 
 ## 決定ログ
 
 実装中に確定した設計判断を、Why 付きで新しい順に追記する。
+
+- **2026-07-22 herdr 0.7.5 対応: focus を terminal_id → pane_id に（0007）**: herdr 0.7.5 で
+  `agent focus` の target が terminal_id → pane_id に変更（terminal_id は受け付け不可）。確認は 3 点:
+  (1) `agent` help「targets accept unique agent names and pane ids」、(2) 実測 `agent get <terminal_id>`→
+  agent_not_found / `<pane_id>`→OK、(3) CHANGELOG 0.7.5「accept only a unique live agent name or the pane ID」。
+  `internal/herdr` の TargetID を pane_id に（hint/filter とも TargetID 経由で両対応）、`min_herdr_version`
+  を 0.7.5 に。Why: 0.7.5 で現行 focus が破綻するため必須。実機 0.7.5 で focus 成功（EXIT=0）確認。
+- **2026-07-22 filter コマンドを別コマンドとして追加（0006）**: hint（ラベル方式）は残し、プロジェクト名を
+  fuzzy 絞り込みしてカーソル選択する filter を、同一プラグインの別 entrypoint として追加（案 A1・単一バイナリ
+  + `herdr-hint filter`）。grouping は `internal/ui.Arrange` を再利用し hint 用コードは不変。Why: ラベルを
+  目視で探すのがやりづらいため（ユーザー要望）。PR #6 はユーザー指示でマージ（codex レビューは未返信）。
 
 - **2026-07-19 実装完了（全 5 タスク）**: 0001-0005 を各 PR (#1-#5) で実装し、codex レビュー承認 →
   squash マージ。最終タスクはユーザー承認も取得。main で 4 パッケージすべて build/test/vet green、

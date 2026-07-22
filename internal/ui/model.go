@@ -12,7 +12,7 @@ import (
 
 // Model is the Bubble Tea model for the hint picker. It renders precomputed
 // lines with a scroll offset and resolves typed labels to an agent. On select
-// it stores the target terminal_id and quits; main runs `agent focus` after the
+// it stores the target pane_id and quits; main runs `agent focus` after the
 // program exits and the terminal is restored (see docs/plan.md §3.2).
 type Model struct {
 	lines   []string
@@ -23,7 +23,7 @@ type Model struct {
 	height  int
 	offset  int
 	pending string // first char in two-letter mode
-	sel     string // selected terminal_id ("" = none)
+	sel     string // selected pane_id ("" = none)
 }
 
 // NewModel builds a Model from arranged groups. height/width 0 means "not yet
@@ -46,7 +46,7 @@ func NewModel(groups []Group, overflow, height int) Model {
 	}
 }
 
-// Selected returns the chosen terminal_id, or "" if the user cancelled.
+// Selected returns the chosen pane_id, or "" if the user cancelled.
 func (m Model) Selected() string { return m.sel }
 
 func (m Model) Init() tea.Cmd { return nil }

@@ -31,7 +31,7 @@ func NewModel(groups []Group) Model {
 	return m
 }
 
-// Selected returns the chosen terminal_id, or "" if cancelled / no match.
+// Selected returns the chosen pane_id, or "" if cancelled / no match.
 func (m Model) Selected() string { return m.sel }
 
 func (m *Model) refilter() {
