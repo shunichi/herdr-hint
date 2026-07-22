@@ -1,8 +1,8 @@
 id = "shunichi.hint"
 name = "Hint"
-version = "0.1.0"
-min_herdr_version = "0.7.0"
-description = "Vimium-style hint labels to jump to any agent"
+version = "0.2.0"
+min_herdr_version = "0.7.5"
+description = "Jump to any herdr agent (incremental filter or Vimium-style hints)"
 platforms = ["linux", "macos"]
 
 [[build]]

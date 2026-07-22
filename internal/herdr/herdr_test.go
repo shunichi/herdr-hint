@@ -25,8 +25,8 @@ const wsJSON = `{"id":"cli:workspace:list","result":{"type":"workspace_list","wo
 ]}}`
 
 const agJSON = `{"id":"cli:agent:list","result":{"type":"agent_list","agents":[
-  {"terminal_id":"t1","name":"my-agent","agent":"claude","agent_status":"working","cwd":"/repo/a","focused":true,"terminal_title_stripped":"Fix bug","workspace_id":"wA"},
-  {"terminal_id":"t2","agent":"codex","agent_status":"idle","cwd":"/repo/b","focused":false,"workspace_id":"wA"}
+  {"pane_id":"wA:p1","name":"my-agent","agent":"claude","agent_status":"working","cwd":"/repo/a","focused":true,"terminal_title_stripped":"Fix bug","workspace_id":"wA"},
+  {"pane_id":"wA:p2","agent":"codex","agent_status":"idle","cwd":"/repo/b","focused":false,"workspace_id":"wA"}
 ]}}`
 
 func TestParseWorkspaces(t *testing.T) {
@@ -48,7 +48,7 @@ func TestParseAgents(t *testing.T) {
 	if len(ag) != 2 {
 		t.Fatalf("len = %d, want 2", len(ag))
 	}
-	if ag[0].TerminalID != "t1" || ag[0].Type != "claude" || ag[0].TitleStripped != "Fix bug" || !ag[0].Focused {
+	if ag[0].PaneID != "wA:p1" || ag[0].Type != "claude" || ag[0].TitleStripped != "Fix bug" || !ag[0].Focused {
 		t.Fatalf("agent[0] wrong: %+v", ag[0])
 	}
 	// Missing fields (name/cwd/title) must decode to empty, not error.
@@ -79,13 +79,13 @@ func TestListNonZeroExit(t *testing.T) {
 	}
 }
 
-func TestFocusPassesTerminalID(t *testing.T) {
+func TestFocusPassesPaneID(t *testing.T) {
 	s := &stubRunner{respond: func(name string, args []string) ([]byte, error) { return nil, nil }}
 	c := NewWithRunner("herdr", s.run)
-	if err := c.Focus("t42"); err != nil {
+	if err := c.Focus("wA:p42"); err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"herdr", "agent", "focus", "t42"}
+	want := []string{"herdr", "agent", "focus", "wA:p42"}
 	if len(s.calls) != 1 || !reflect.DeepEqual(s.calls[0], want) {
 		t.Fatalf("focus call = %v, want %v", s.calls, want)
 	}
@@ -96,9 +96,9 @@ func TestDisplayNamePrecedence(t *testing.T) {
 		a    Agent
 		want string
 	}{
-		{Agent{Name: "n", Type: "claude", TerminalID: "t"}, "n"},
-		{Agent{Type: "codex", TerminalID: "t"}, "codex"},
-		{Agent{TerminalID: "t"}, "t"},
+		{Agent{Name: "n", Type: "claude", PaneID: "p"}, "n"},
+		{Agent{Type: "codex", PaneID: "p"}, "codex"},
+		{Agent{PaneID: "p"}, "p"},
 	}
 	for _, c := range cases {
 		if got := displayName(c.a); got != c.want {
@@ -192,7 +192,7 @@ func TestToItems(t *testing.T) {
 	if len(items) != 2 {
 		t.Fatalf("len = %d", len(items))
 	}
-	if items[0].TargetID != "t1" || items[0].DisplayName != "my-agent" || items[0].Type != "claude" ||
+	if items[0].TargetID != "wA:p1" || items[0].DisplayName != "my-agent" || items[0].Type != "claude" ||
 		items[0].Group != "herdr" || items[0].GroupID != "wA" || items[0].Context != "a:main" ||
 		items[0].Title != "Fix bug" {
 		t.Fatalf("item[0] wrong: %+v", items[0])

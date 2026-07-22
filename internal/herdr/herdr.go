@@ -48,7 +48,7 @@ type Workspace struct {
 // Agent is a herdr agent as reported by `herdr agent list`. Zero values mean the
 // field was absent/empty in the JSON.
 type Agent struct {
-	TerminalID    string
+	PaneID        string // herdr 0.7.5+: `agent focus` target (terminal_id no longer accepted)
 	Name          string
 	Type          string // herdr "agent" field: claude / codex / ...
 	Status        string
@@ -63,7 +63,7 @@ type Agent struct {
 // package (task 0003); TargetID is what `herdr agent focus` receives.
 type Item struct {
 	Label       string
-	TargetID    string
+	TargetID    string // pane_id — the `herdr agent focus` target (herdr 0.7.5+)
 	DisplayName string
 	Type        string
 	Status      string
@@ -115,7 +115,7 @@ type wsResponse struct {
 type agResponse struct {
 	Result struct {
 		Agents []struct {
-			TerminalID    string `json:"terminal_id"`
+			PaneID        string `json:"pane_id"`
 			Name          string `json:"name"`
 			Agent         string `json:"agent"`
 			AgentStatus   string `json:"agent_status"`
@@ -145,10 +145,11 @@ func (c *Client) ListAgents() ([]Agent, error) {
 	return parseAgents(out)
 }
 
-// Focus runs `herdr agent focus <terminalID>`.
-func (c *Client) Focus(terminalID string) error {
-	if _, err := c.run(c.bin, "agent", "focus", terminalID); err != nil {
-		return fmt.Errorf("herdr agent focus %s: %w", terminalID, err)
+// Focus runs `herdr agent focus <paneID>`. herdr 0.7.5+ accepts a pane id (or a
+// unique agent name) as the target; terminal ids are no longer accepted.
+func (c *Client) Focus(paneID string) error {
+	if _, err := c.run(c.bin, "agent", "focus", paneID); err != nil {
+		return fmt.Errorf("herdr agent focus %s: %w", paneID, err)
 	}
 	return nil
 }
@@ -173,7 +174,7 @@ func parseAgents(data []byte) ([]Agent, error) {
 	agents := make([]Agent, len(r.Result.Agents))
 	for i, a := range r.Result.Agents {
 		agents[i] = Agent{
-			TerminalID:    a.TerminalID,
+			PaneID:        a.PaneID,
 			Name:          a.Name,
 			Type:          a.Agent,
 			Status:        a.AgentStatus,
@@ -196,7 +197,7 @@ func (c *Client) ToItems(agents []Agent, workspaces []Workspace) []Item {
 	items := make([]Item, len(agents))
 	for i, a := range agents {
 		items[i] = Item{
-			TargetID:    a.TerminalID,
+			TargetID:    a.PaneID,
 			DisplayName: displayName(a),
 			Type:        a.Type,
 			Status:      a.Status,
@@ -210,7 +211,7 @@ func (c *Client) ToItems(agents []Agent, workspaces []Workspace) []Item {
 	return items
 }
 
-// displayName mirrors upstream parse_agents: name, else type, else terminal id.
+// displayName mirrors upstream parse_agents: name, else type, else pane id.
 func displayName(a Agent) string {
 	if a.Name != "" {
 		return a.Name
@@ -218,7 +219,7 @@ func displayName(a Agent) string {
 	if a.Type != "" {
 		return a.Type
 	}
-	return a.TerminalID
+	return a.PaneID
 }
 
 // GitContext returns "repo:branch" for cwd, or "" when cwd is not inside a git
