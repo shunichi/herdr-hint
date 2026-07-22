@@ -70,7 +70,7 @@ make uninstall  # herdr から登録を外す
 make clean      # バイナリ削除
 ```
 
-`make install` はローカル開発リンク（`herdr plugin link $(CURDIR)`）で、実行後にキーバインド設定例を表示する
+`make install` はローカル開発リンク（`herdr plugin link "$(pwd)"`）で、実行後にキーバインド設定例を表示する
 （キーバインドは各自の `~/.config/herdr/config.toml` に追記し、`herdr server reload-config` で反映）。
 公開版を入れる場合は上記「インストール」の `herdr plugin install shunichi/herdr-hint`。
 

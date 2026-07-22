@@ -19,7 +19,7 @@ check: vet test
 install:
 	-herdr plugin unlink $(PLUGIN_ID) 2>/dev/null
 	-herdr plugin uninstall $(PLUGIN_ID) 2>/dev/null
-	herdr plugin link $(CURDIR)
+	herdr plugin link "$$(pwd)"
 	@echo
 	@echo "installed $(PLUGIN_ID). キーバインド例（~/.config/herdr/config.toml）:"
 	@echo '  command = "herdr plugin pane open --plugin $(PLUGIN_ID) --entrypoint filter"'
