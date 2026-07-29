@@ -31,29 +31,17 @@ project キー = リポジトリ名 `herdr-hint`）。リポジトリ内には�
 役割は固定ではない。状況に応じて実装役とレビュー役を入れ替えたり、両役を Claude（別 pane の独立エージェント）が
 担ったりできる。構成を変えたらこの節を更新する。
 
+**往復の手順は agmsg-review skill に従う。** 依頼文の書き方、相手の起こし方（codex は send だけでは
+気づかないので `herdr agent prompt <pane_id> '$agmsg' --wait --until working` が必須。`pane run` は
+bracketed-paste で Enter が食われるため使わない）、指摘の裏取り、承認が出るまでのループとラウンド上限
+（既定 3 回）はすべてあちらにある。ここには重複して書かない。以下はこのプロジェクト固有の決めごとで、
+agmsg-review の既定より優先される。
+
 - **いつレビューを受けるか**:
   - タスクの**重要な設計判断・実装ポイント**に差しかかったとき（方針を固める前）。
   - **タスクを完了（done / review）にする前**（コミット・PR 化の前が望ましい）。
-- **レビュー役への依頼方法**: `agmsg send codex "<レビュー依頼内容>"`（実体は
-  `~/.agents/skills/agmsg/scripts/send.sh herdr-hint claude codex "<...>"`）で対象差分・意図・
-  確認観点を添えて送り、レビュー役に読ませる。応答は自分の agmsg monitor で受信する。
-  read させる方法はレビュー役の種別による:
-
-  | 種別 | メッセージを読ませる |
-  |------|----------------------|
-  | claude | monitor 起動時は自動受信。未起動なら `herdr pane run <pane_id> '/agmsg'`（`/` 呼び出し） |
-  | codex | 必ず `herdr pane run <pane_id> '$agmsg'`（`$` 呼び出し）。send だけでは気づかない |
-
-  pane_id は `herdr agent list`（`result.agents[]`）から本プロジェクトの cwd で絞って取得する。
-  **`agent` フィールドは種別（`claude` / `codex`）でありロール名ではない**ので相手名では引けない。
-  codex は `agent=="codex"` かつ cwd 一致（pane は無名）、claude（spawn 済み）は
-  `terminal_title_stripped == "herdr-hint-<name>"` で引く。同種別が複数あればユーザーに確認する。
-- **レビュー役(codex)が不在なら herdr で spawn する**（agmsg の tmux spawn は使わない）: (1)
-  `~/.agents/skills/agmsg/scripts/join.sh herdr-hint codex codex "$(pwd)"` で事前登録、(2)
-  `herdr pane split <自分の pane> --direction right --no-focus` で pane を開き `herdr pane run <新 pane> "codex"`
-  で起動、(3) 起動後 `herdr pane run <新 pane> '$agmsg actas codex'` で読ませる。
-- **承認が得られない場合**: 指摘を反映して再度レビューを依頼する。**3 回レビューを受けても承認を
-  得られない場合は、それ以上ループせず、ユーザーに判断を仰ぐ**（争点・レビュー役の指摘・こちらの見解を整理して提示）。
+- **レビュー役が不在なら agmsg-review の手順で spawn する**（herdr の pane を開く。agmsg の
+  `spawn.sh` は使わない）。team は `herdr-hint`、name は `codex`、type は `codex`。
 - **タスク完了前にはユーザーのレビューも受ける**: レビュー役の承認が得られたら、done / review にする前に
   ユーザーに成果を提示してレビュー・承認を得る。
 - レビューのやり取り・結論は `docs/progress.md` の決定ログに要点を残す。

@@ -27,6 +27,12 @@
 
 実装中に確定した設計判断を、Why 付きで新しい順に追記する。
 
+- **2026-07-30 相手役の起こし方を agent 層に変更（0010）**: 下の「2026-07-18 相手役の spawn は
+  herdr を使う」を一部上書きする。**pane を作るのは従来どおり `herdr pane split`** だが、CLI 起動と
+  起動後の actas / inbox wake は **`herdr agent start` + `herdr agent prompt`** に変更し、**`pane run` は
+  使わない**。Why: `pane run` は pane 層の素の文字列+Enter で、bracketed-paste 時に Enter が改行として
+  食われプロンプトが入力欄に残る（agent 層の `agent prompt` は paste モードを見て送るのでこの失敗が無い。
+  herdr #1525）。往復手順は共有 skill agmsg-review に集約済みで、CLAUDE.md は手順を転記せず委譲する形に整理した。
 - **2026-07-22 herdr 0.7.5 対応: focus を terminal_id → pane_id に（0007）**: herdr 0.7.5 で
   `agent focus` の target が terminal_id → pane_id に変更（terminal_id は受け付け不可）。確認は 3 点:
   (1) `agent` help「targets accept unique agent names and pane ids」、(2) 実測 `agent get <terminal_id>`→
